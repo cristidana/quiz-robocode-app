@@ -1,39 +1,56 @@
 import { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { questions } from '../data/questions';
 
-export default function QuestionScreen() {
-    const [score, setScore] = useState(0); 
+export default function QuestionScreen({ navigation }) {
+    const [score, setScore] = useState(0);
     const [selectedOption, setSelectedOption] = useState(null);
-    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); 
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
     const currentQuestion = questions[currentQuestionIndex];
 
+    const handleTimeout = () => {
+        if (currentQuestionIndex < questions.length - 1) {
+            setCurrentQuestionIndex(currentQuestionIndex + 1);
+            setSelectedOption(null);
+        } else {
+            navigation.navigate('Home');
+        }
+    };
+
     const handleAnswer = (option) => {
+        if (selectedOption) return;
+
         setSelectedOption(option);
         if (option === currentQuestion.correctAnswer) {
             setScore(score + 1);
         }
-        if (currentQuestionIndex < questions.length - 1) {
-            setTimeout(() => {
+
+        setTimeout(() => {
+            if (currentQuestionIndex < questions.length - 1) {
                 setCurrentQuestionIndex(currentQuestionIndex + 1);
                 setSelectedOption(null);
-            }, 1000);
-        }
+            } else {
+                navigation.navigate('Home');
+            }
+        }, 1000);
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Intrebare</Text>
+            <Text style={styles.title}>Question {currentQuestionIndex + 1}</Text>
             <Text style={styles.question}>{currentQuestion.question}</Text>
+
             {currentQuestion.options.map((option, index) => (
                 <TouchableOpacity
                     key={index}
                     style={[
                         styles.optionButton,
-                        selectedOption === option && (option === currentQuestion.correctAnswer
-                            ? styles.correctOption
-                            : styles.wrongOption)
+                        selectedOption === option && (
+                            option === currentQuestion.correctAnswer
+                                ? styles.correctOption
+                                : styles.wrongOption
+                        )
                     ]}
                     onPress={() => handleAnswer(option)}
                     disabled={selectedOption !== null}
@@ -41,51 +58,66 @@ export default function QuestionScreen() {
                     <Text style={styles.optionText}>{option}</Text>
                 </TouchableOpacity>
             ))}
+
             <Text style={styles.score}>Score: {score}</Text>
         </View>
     );
 }
 
+const screenWidth = Dimensions.get('window').width;
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 24,
-        backgroundColor: '#f2f2f2',
+        backgroundColor: '#121212',
+        padding: 20,
         justifyContent: 'center',
     },
     title: {
-        fontSize: 22,
+        fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 12,
+        color: '#ffffff',
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+    timer: {
+        fontSize: 18,
+        color: '#bbbbbb',
+        marginBottom: 10,
         textAlign: 'center',
     },
     question: {
         fontSize: 20,
+        color: '#f0f0f0',
         marginBottom: 20,
+        textAlign: 'center',
     },
     optionButton: {
-        backgroundColor: '#ffffff',
+        backgroundColor: '#1e1e1e',
         padding: 15,
         borderRadius: 8,
-        marginBottom: 10,
+        marginBottom: 12,
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderColor: '#333',
+        width: '100%',
     },
     optionText: {
         fontSize: 16,
+        color: '#ffffff',
+        textAlign: 'center',
     },
     correctOption: {
-        backgroundColor: '#d4edda',
-        borderColor: '#28a745',
+        backgroundColor: '#2e7d32',
+        borderColor: '#2e7d32',
     },
     wrongOption: {
-        backgroundColor: '#f8d7da',
-        borderColor: '#dc3545',
+        backgroundColor: '#c62828',
+        borderColor: '#c62828',
     },
     score: {
         marginTop: 20,
         fontSize: 16,
+        color: '#aaa',
         textAlign: 'center',
-        color: '#666',
     },
 });

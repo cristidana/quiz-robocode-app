@@ -4,11 +4,11 @@ export default function HomeScreen({ navigation }) {
     return (
         <View style={styles.container}>
             <View style={styles.innerContainer}>
-                <Text style={styles.title}>Welcome to my quiz app!</Text>
+                <Text style={styles.title}>🧠 Welcome to the Quiz!</Text>
                 <Button
-                    title="Start quiz"
+                    title="Start Quiz"
                     onPress={() => navigation.navigate('Quiz')}
-                    color="#007bff"
+                    color="#0dcaf0"
                 />
             </View>
         </View>
@@ -19,22 +19,24 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        backgroundColor: '#f9f9f9',
+        backgroundColor: '#121212',
+        padding: 20,
     },
     innerContainer: {
-        margin: 20,
-        padding: 20,
-        backgroundColor: '#ffffff',
-        borderRadius: 10,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 10,
+        backgroundColor: '#1f1f1f',
+        padding: 30,
+        borderRadius: 16,
         elevation: 5,
         alignItems: 'center',
+        shadowColor: '#000',
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
     },
     title: {
-        fontSize: 24,
+        fontSize: 26,
+        color: '#f1f1f1',
         marginBottom: 20,
         textAlign: 'center',
+        fontWeight: 'bold',
     },
 });

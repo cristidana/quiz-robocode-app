@@ -8,19 +8,28 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationIndependentTree>
-      <Stack.Navigator>
-        <Stack.Screen name="Home">
-          {(props) => (
-            <HomeScreen {...props}/>
-          )}
-        </Stack.Screen>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: '#1f1f1f',
+          },
+          headerTintColor: '#f1f1f1',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      >
+        <Stack.Screen
+          name="Home"
+          options={{ title: '🏠 Home' }}
+          children={(props) => <HomeScreen {...props} />}
+        />
 
-        <Stack.Screen name="Quiz">
-          {(props) => (
-            <QuestionScreen {...props}/>
-          )}
-        </Stack.Screen>
-    
+        <Stack.Screen
+          name="Quiz"
+          options={{ title: '🧠 Quiz Time' }}
+          children={(props) => <QuestionScreen {...props} />}
+        />
       </Stack.Navigator>
     </NavigationIndependentTree>
   );
