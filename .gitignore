@@ -54,6 +54,9 @@ metro-cache/
 # TypeScript build artifacts
 *.tsbuildinfo
 
+.vscode/
+
+
 # Optional: prevent package-lock or yarn.lock if you're using only one
 # yarn.lock
 # package-lock.json
