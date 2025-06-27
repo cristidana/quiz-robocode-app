@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { questions } from '../data/questions';
 
@@ -6,16 +6,35 @@ export default function QuestionScreen({ navigation }) {
     const [score, setScore] = useState(0);
     const [selectedOption, setSelectedOption] = useState(null);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [secondsLeft, setSecondsLeft] = useState(20);
+
+    const intervalRef = useRef(null);
 
     const currentQuestion = questions[currentQuestionIndex];
 
+    const startTimer = () => {
+        clearInterval(intervalRef.current);
+        setSecondsLeft(20);
+
+        intervalRef.current = setInterval(() => {
+            setSecondsLeft(prev => {
+                if (prev === 1) {
+                    clearInterval(intervalRef.current);
+                    handleTimeout();
+                    return 20;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+    };
+
+    useEffect(() => {
+        startTimer();
+        return () => clearInterval(intervalRef.current);
+    }, [currentQuestionIndex]);
+
     const handleTimeout = () => {
-        if (currentQuestionIndex < questions.length - 1) {
-            setCurrentQuestionIndex(currentQuestionIndex + 1);
-            setSelectedOption(null);
-        } else {
-            navigation.navigate('Home');
-        }
+        goToNextQuestion();
     };
 
     const handleAnswer = (option) => {
@@ -23,22 +42,33 @@ export default function QuestionScreen({ navigation }) {
 
         setSelectedOption(option);
         if (option === currentQuestion.correctAnswer) {
-            setScore(score + 1);
+            setScore(prev => prev + 1);
         }
 
+        clearInterval(intervalRef.current);
+
         setTimeout(() => {
-            if (currentQuestionIndex < questions.length - 1) {
-                setCurrentQuestionIndex(currentQuestionIndex + 1);
-                setSelectedOption(null);
-            } else {
-                navigation.navigate('Home');
-            }
+            goToNextQuestion();
         }, 1000);
+    };
+
+    const goToNextQuestion = () => {
+        if (currentQuestionIndex < questions.length - 1) {
+            setCurrentQuestionIndex(prev => prev + 1);
+            setSelectedOption(null);
+        } else {
+            clearInterval(intervalRef.current);
+            navigation.navigate('Final',{
+                score,
+                total : questions.length
+            });
+        }
     };
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Question {currentQuestionIndex + 1}</Text>
+            <Text style={styles.timer}>⏱️{secondsLeft}</Text>
             <Text style={styles.question}>{currentQuestion.question}</Text>
 
             {currentQuestion.options.map((option, index) => (
